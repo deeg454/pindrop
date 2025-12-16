@@ -14,7 +14,8 @@ export const posts = sqliteTable("posts", {
 });
 
 export const users = sqliteTable("users", {
-  userId: text("user_id").primaryKey(), // Clerk user ID
+  userId: int("user_id").primaryKey({ autoIncrement: true }), 
+  clerkUserId: text("clerk_id").notNull().unique(),
   userName: text("username").notNull().unique(),
   profileImageUrl: text("profile_image_url"),
   createdAt: int("created_at", { mode: "timestamp_ms" })
