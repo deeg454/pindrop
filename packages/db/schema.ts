@@ -1,5 +1,26 @@
-import { sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { sql } from "drizzle-orm";
+import { sqliteTable, text, int, foreignKey} from "drizzle-orm/sqlite-core";
 
-export const testTable = sqliteTable("test_table", {
-  id: text("id").primaryKey(),
+export const posts = sqliteTable("posts", { 
+  postId: int("post_id").primaryKey({ autoIncrement: true }),
+  userID: int("user_id").notNull().references(() => users.userId),
+  title: text("title"),
+  content: text("content"),
+  latitude: text("latitude"),
+  longtitude: text("longtitude"),
+  createdAt: int("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(current_timestamp)`),
 });
+
+export const users = sqliteTable("users", {
+  userId: text("user_id").primaryKey(), // Clerk user ID
+  userName: text("username").notNull().unique(),
+  profileImageUrl: text("profile_image_url"),
+  createdAt: int("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(current_timestamp)`),
+});
+
+
+
