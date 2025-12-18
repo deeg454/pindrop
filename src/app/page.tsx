@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { ensureUser } from "@/lib/user";
+import { Menu } from "@/components/menu";
 
 export default async function Home() {
   const { userId } = await auth();
@@ -11,6 +12,7 @@ export default async function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       Landing page
+      <Menu />  
     </div>
   );
 }
