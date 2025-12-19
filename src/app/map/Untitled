@@ -1,0 +1,5 @@
+import MapboxMap from "@/components/MapboxMap";
+
+export default function Page() {
+  return <MapboxMap region="AS" />;
+}
