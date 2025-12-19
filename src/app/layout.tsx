@@ -24,8 +24,6 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'Pindrop',
-  description: 'Drop a pin on the map to share your thoughts with others',
-  title: 'Pindrop',
   description: 'A new way of exploring the world.',
 }
 
@@ -39,9 +37,9 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <header className="flex items-center justify-between p-4 h-16 bg-[#00F0B5]">
+        <header className="flex items-center justify-between p-4 h-16 bg-background">
         <Menu />
-        <h1 className="text-5xl font-bold">PINDROP</h1>
+        <h1 className="text-5xl font-bold">Pindrop</h1>
         <div className="flex items-center gap-4">
           
           <SignedOut>

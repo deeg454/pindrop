@@ -1,3 +1,5 @@
+"use server"
+
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { db } from "@/packages/db";
 import { users } from "@/packages/db/schema";
@@ -38,4 +40,9 @@ export async function ensureUser() {
     .returning();
 
   return user;
+}
+
+export async function getUserID(){
+  const user = await ensureUser();
+  return String(user.userId);
 }
