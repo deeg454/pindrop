@@ -20,15 +20,16 @@ const REGION_CONFIG: Record<string, { center: [number, number]; zoom: number }> 
 export default function MapboxMap({ region }: MapboxMapProps) {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const hasFlownRef = useRef(false);
+  const previousRegionRef = useRef<string | null>(null);
+  const isInitializedRef = useRef(false);
   
-  // Initialize map at a neutral location (world view)
+  // Initialize map only once
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
 
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN ?? "";
     
-    // Start at a neutral world view so we can always fly to the target region
+    // Start at a neutral world view for initial load
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/streets-v12",
@@ -41,11 +42,12 @@ export default function MapboxMap({ region }: MapboxMapProps) {
     return () => {
       mapRef.current?.remove();
       mapRef.current = null;
-      hasFlownRef.current = false;
+      isInitializedRef.current = false;
+      previousRegionRef.current = null;
     };
   }, []);
 
-
+  // Handle region changes with smooth animation
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -54,22 +56,32 @@ export default function MapboxMap({ region }: MapboxMapProps) {
     if (!cfg) return;
 
     const flyToRegion = () => {
+      // If this is the first region or map hasn't loaded yet, use a simple flyTo
+      // Otherwise, animate from current position
       map.flyTo({
         center: cfg.center,
         zoom: cfg.zoom,
         essential: true,
-        speed: .2,
+        duration: 2000, // 2 second smooth animation
         curve: 1.42,
       });
-      hasFlownRef.current = true;
     };
 
-    if (map.loaded()) {
-      setTimeout(flyToRegion, 100);
-    } else {
-      map.once("load", () => {
-        setTimeout(flyToRegion, 100);
-      });
+    // If region changed, animate to new region
+    if (previousRegionRef.current !== region) {
+      if (map.loaded()) {
+        flyToRegion();
+      } else {
+        map.once("load", () => {
+          flyToRegion();
+          isInitializedRef.current = true;
+        });
+      }
+      previousRegionRef.current = region;
+    } else if (!isInitializedRef.current && map.loaded()) {
+      // Initial load - fly to the region
+      flyToRegion();
+      isInitializedRef.current = true;
     }
   }, [region]);
 
