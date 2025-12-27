@@ -20,10 +20,15 @@ interface PostFormProps {
 }
 
 const pinFormSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  content: z.string().min(1, "Content is required"),
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .max(50, "Title must be at most 50 characters"),
+  content: z
+    .string()
+    .min(1, "Content is required")
+    .max(150, "Content must be at most 250 characters"),
 });
-
 export default function PostForm({
   latitude,
   longitude,
@@ -52,7 +57,7 @@ export default function PostForm({
       onSuccess();
     } catch (error) {
       console.error("Failed to create post:", error);
-      // Optionally add user-facing toast/error message here
+
     }
   }
   return (
